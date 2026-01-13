@@ -31,17 +31,17 @@ export class Game {
         this.ball = null;
         this.actionQueue = new ActionQueue();
         
-        // Action Groups (Phase 3)
+        // Action Groups
         this.savedGroups = [];
         this.isRecording = false;
         this.recordingGroup = null;
         
-        // Repeat Building Mode (Phase 4)
+        // Repeat Building Mode
         this.isBuildingRepeat = false;
         this.buildingRepeatBlock = null;
         this.repeatCount = DEFAULT_REPETITIONS;
         
-        // Recursive Groups (Phase 5)
+        // Recursive Groups
         this.savedRecursiveGroups = [];
         this.activeRecursiveRef = null;
         this.currentRecursionDepth = 0;
@@ -51,18 +51,18 @@ export class Game {
         this.buildingRecursiveGroup = null;
         this.recursionPhase = null; // 'enter' or 'exit'
         
-        // Level System (Phase 6)
+        // Level System
         this.levelManager = new LevelManager();
         this.targets = [];
         this.actionsUsed = 0;
         this.levelComplete = false;
         
-        // Effects System (Phase 7)
+        // Effects System
         this.effects = new EffectsManager();
         this.sound = new SoundManager();
         this.tutorial = new TutorialManager();
         
-        // Engagement System (Phase 8)
+        // Engagement System
         this.achievements = new AchievementsManager();
         this.levelAttempts = 0;
         this.levelStartTime = null;
@@ -71,9 +71,14 @@ export class Game {
         this.usedLoopsThisRun = false;
         this.usedRecursionThisRun = false;
         
-        // Analytics & Accessibility (Phase 9)
+        // Analytics & Accessibility
         this.analytics = new AnalyticsManager();
         this.accessibility = null; // Initialized after UI setup
+        
+        // Session timer
+        this.sessionStartTime = Date.now();
+        this.timerInterval = null;
+        this.timerVisible = true;
         
         // Initial ball position
         this.initialBallX = 0;
@@ -120,17 +125,23 @@ export class Game {
         // Create UI for actions
         this.createActionUI();
         
-        // Create UI for groups (Phase 3)
+        // Create UI for groups
         this.createGroupsUI();
         
-        // Create UI for recursive groups (Phase 5)
+        // Create UI for recursive groups
         this.createRecursiveGroupsUI();
         
-        // Create level navigation UI (Phase 6)
+        // Create level navigation UI
         this.createLevelUI();
         
-        // Create engagement UI (Phase 8)
+        // Create engagement UI
         this.createEngagementUI();
+        
+        // Create timer UI
+        this.createTimerUI();
+        
+        // Create sound controls UI
+        this.createSoundControlsUI();
         
         // Set up event listeners
         this.setupEventListeners();
@@ -138,13 +149,13 @@ export class Game {
         // Update feature visibility after all UI is created
         this.updateFeatureVisibility();
         
-        // Initialize accessibility after UI is ready (Phase 9)
+        // Initialize accessibility after UI is ready
         this.accessibility = new AccessibilityManager(this);
         
         // Start game loop
         this.startGameLoop();
         
-        // Show tutorial for current level (Phase 7)
+        // Show tutorial for current level
         this.showLevelTutorial();
         
         console.log('Game initialized - Phase 9: Analytics & Accessibility');
@@ -179,7 +190,7 @@ export class Game {
         this.levelComplete = false;
         this.currentLevel = level.id;
         
-        // Reset run tracking (Phase 8)
+        // Reset run tracking
         this.levelAttempts = 0;
         this.hitObstacleThisRun = false;
         this.usedBlocksThisRun = false;
@@ -191,10 +202,10 @@ export class Game {
         this.achievements.startLevelTimer();
         this.achievements.recordLevelAttempt(level.id);
         
-        // Track analytics (Phase 9)
+        // Track analytics
         this.analytics?.startLevel(level.id);
         
-        // Update accessibility (Phase 9)
+        // Update accessibility
         this.accessibility?.updateLevelARIA(level);
         
         // Update UI
@@ -205,7 +216,7 @@ export class Game {
     }
 
     /**
-     * Show tutorial for current level features (Phase 7)
+    * Show tutorial for current level features
      */
     showLevelTutorial() {
         const level = this.levelManager.getCurrentLevel();
@@ -265,7 +276,7 @@ export class Game {
             console.log(`Starting action ${index + 1}: ${action.type}`);
             this.updateQueueDisplay();
             
-            // Play move sound (Phase 7)
+            // Play move sound
             this.sound.playMove();
             
             // Calculate target position
@@ -284,10 +295,10 @@ export class Game {
             this.ball.completeAnimation();
             this.actionsUsed++;
             
-            // Spawn move effect (Phase 7)
+            // Spawn move effect
             this.effects.spawnMoveEffect(this.ball.pixelX, this.ball.pixelY, CONFIG.colors.primary);
             
-            // Check if ball hit any targets (Phase 6)
+            // Check if ball hit any targets
             this.checkTargetCollision();
             
             this.updateQueueDisplay();
@@ -307,7 +318,7 @@ export class Game {
             this.updateGroupsDisplay();
         };
         
-        // Repeat block callbacks (Phase 4)
+        // Repeat block callbacks
         this.actionQueue.onRepeatStart = (repeatBlock, itemIndex) => {
             console.log(`Starting repeat block: ${repeatBlock.count}x`);
             this.updateQueueDisplay();
@@ -323,7 +334,7 @@ export class Game {
             this.updateQueueDisplay();
         };
         
-        // Recursion callbacks (Phase 5)
+        // Recursion callbacks
         this.actionQueue.onRecursionStart = (recursiveRef, itemIndex) => {
             console.log(`Starting recursion: ${recursiveRef.group.name}()`);
             this.activeRecursiveRef = recursiveRef;
@@ -352,7 +363,7 @@ export class Game {
             this.activeGroupRef = null;
             this.activeRecursiveRef = null;
             
-            // Check win condition (Phase 6)
+            // Check win condition
             this.checkWinCondition();
             
             this.updatePlayButton();
@@ -405,7 +416,7 @@ export class Game {
                 <button class="action-btn repeat-btn" id="btn-repeat" aria-label="Start/finish repeat block" title="LOOP: Click to start, add actions, click again to finish">
                     <span style="font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;">🔁</span>
                 </button>
-                <button class="action-btn recursion-btn" id="btn-recursion" aria-label="Create recursive function" title="RECURSION: Function calls itself">
+                <button class="action-btn recursion-btn" id="btn-recursion" aria-label="Create nest pattern" title="NEST: IN→→→OUT pattern">
                     <span style="font-family: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;">🌀</span>
                 </button>
             </div>
@@ -436,19 +447,19 @@ export class Game {
             clearBtn.addEventListener('click', () => this.clearQueue());
         }
         
-        // Record button (Phase 3)
+        // Record button
         const recordBtn = document.getElementById('btn-record');
         if (recordBtn) {
             recordBtn.addEventListener('click', () => this.toggleRecording());
         }
         
-        // Repeat button (Phase 4) - toggle mode
+        // Repeat button - toggle mode
         const repeatBtn = document.getElementById('btn-repeat');
         if (repeatBtn) {
             repeatBtn.addEventListener('click', () => this.toggleRepeatMode());
         }
         
-        // Recursion button (Phase 5)
+        // Recursion button
         const recursionBtn = document.getElementById('btn-recursion');
         if (recursionBtn) {
             recursionBtn.addEventListener('click', () => this.createRecursiveGroup());
@@ -456,7 +467,7 @@ export class Game {
     }
 
     /**
-     * Create groups UI panel (Phase 3)
+    * Create groups UI panel
      */
     createGroupsUI() {
         const footer = document.querySelector('.game-footer');
@@ -491,7 +502,7 @@ export class Game {
     }
 
     /**
-     * Create recursive groups UI panel (Phase 5)
+    * Create recursive groups UI panel
      */
     createRecursiveGroupsUI() {
         const footer = document.querySelector('.game-footer');
@@ -502,7 +513,7 @@ export class Game {
         recursivePanel.className = 'recursive-panel';
         recursivePanel.innerHTML = `
             <div class="recursive-header">
-                <span class="recursive-label">Recursion:</span>
+                <span class="recursive-label">Nest:</span>
                 <span class="depth-indicator" id="depth-indicator"></span>
                 <button class="clear-all-btn" id="btn-clear-recursion" title="Clear all">✕</button>
             </div>
@@ -526,7 +537,7 @@ export class Game {
     }
 
     /**
-     * Create a recursive group with Enter/Exit pattern (Phase 5)
+    * Create a recursive group with Enter/Exit pattern
      * User adds Enter actions, then Exit actions
      */
     createRecursiveGroup() {
@@ -621,17 +632,17 @@ export class Game {
                 recursionBtn.title = 'Click to switch to EXIT actions';
             } else {
                 recursionBtn.innerHTML = '<span style="font-family: \'Segoe UI Emoji\', sans-serif;">✅</span>';
-                recursionBtn.title = 'Click to finish recursion';
+                recursionBtn.title = 'Click to finish nest';
             }
         } else {
             recursionBtn.classList.remove('building-recursion');
             recursionBtn.innerHTML = '<span style="font-family: \'Segoe UI Emoji\', sans-serif;">🌀</span>';
-            recursionBtn.title = 'RECURSION: Enter→→→Exit pattern';
+            recursionBtn.title = 'NEST: IN→→→OUT pattern';
         }
     }
 
     /**
-     * Update recursive groups display (Phase 5)
+    * Update recursive groups display
      */
     updateRecursiveGroupsDisplay() {
         const recursiveList = document.getElementById('recursive-list');
@@ -714,7 +725,7 @@ export class Game {
     }
 
     /**
-     * Add recursive group reference to queue (Phase 5)
+    * Add recursive group reference to queue
      * @param {RecursiveGroup} group - Group to add
      */
     addRecursiveGroupToQueue(group) {
@@ -722,11 +733,11 @@ export class Game {
         
         const success = this.actionQueue.addRecursiveReference(group);
         if (success) {
-            // Track for achievements (Phase 8)
+            // Track for achievements
             this.usedRecursionThisRun = true;
             this.achievements.recordRecursionUsed();
             
-            // Track analytics (Phase 9)
+            // Track analytics
             this.analytics?.track(AnalyticsEvent.RECURSION_USED, { 
                 name: group.name, 
                 depth: group.maxDepth 
@@ -751,7 +762,7 @@ export class Game {
     }
 
     /**
-     * Cycle recursion depth (Phase 5)
+    * Cycle recursion depth
      * @param {RecursiveGroup} group - Group to modify
      * @param {number} index - Index in saved groups
      */
@@ -864,11 +875,11 @@ export class Game {
         this.savedGroups.push(this.recordingGroup);
         console.log(`Saved group: ${this.recordingGroup.name} with ${this.recordingGroup.size} actions`);
         
-        // Track for achievements (Phase 8)
+        // Track for achievements
         this.usedBlocksThisRun = true;
         this.achievements.recordBlockCreated();
         
-        // Track analytics (Phase 9)
+        // Track analytics
         this.analytics?.track(AnalyticsEvent.BLOCK_CREATED, { 
             name: this.recordingGroup.name, 
             size: this.recordingGroup.size 
@@ -994,7 +1005,7 @@ export class Game {
     }
 
     /**
-     * Toggle repeat building mode (Phase 4)
+    * Toggle repeat building mode
      * Click once to start building, click again to finish
      */
     toggleRepeatMode() {
@@ -1056,11 +1067,11 @@ export class Game {
         // Add the repeat block to queue
         this.actionQueue.addRepeatBlock(this.buildingRepeatBlock);
         
-        // Track for achievements (Phase 8)
+        // Track for achievements
         this.usedLoopsThisRun = true;
         this.achievements.recordLoopUsed();
         
-        // Track analytics (Phase 9)
+        // Track analytics
         this.analytics?.track(AnalyticsEvent.LOOP_USED, { count: this.buildingRepeatBlock.count });
         
         console.log(`Created repeat block: ${this.buildingRepeatBlock.count}x with ${this.buildingRepeatBlock.size} items`);
@@ -1173,8 +1184,8 @@ export class Game {
         this.savedRecursiveGroups = [];
         this.updateRecursiveGroupsDisplay();
         this.sound.playClick();
-        console.log('Cleared all recursion');
-        this.accessibility?.announcer?.announce('All recursion cleared');
+        console.log('Cleared all nest');
+        this.accessibility?.announcer?.announce('All nest cleared');
     }
 
     /**
@@ -1242,10 +1253,10 @@ export class Game {
             this.animateActionAdd(actionType);
             this.sound.playClick();
             
-            // Track analytics (Phase 9)
+            // Track analytics
             this.analytics?.track(AnalyticsEvent.ACTION_ADDED, { type: actionType });
             
-            // Announce for accessibility (Phase 9)
+            // Announce for accessibility
             this.accessibility?.announcer?.announceAction(actionType);
         }
     }
@@ -1277,7 +1288,7 @@ export class Game {
         this.actionQueue.items.forEach((queueItem, index) => {
             const item = document.createElement('div');
             
-            // Check if this is a repeat block (Phase 4)
+            // Check if this is a repeat block
             if (queueItem.isRepeatBlock && queueItem.isRepeatBlock()) {
                 item.className = 'queue-item queue-item-repeat';
                 
@@ -1355,7 +1366,7 @@ export class Game {
                     item.classList.add('queue-item-removable');
                 }
             }
-            // Check if this is a recursive reference (Phase 5)
+            // Check if this is a recursive reference
             else if (queueItem.isRecursiveReference && queueItem.isRecursiveReference()) {
                 item.className = 'queue-item queue-item-recursive';
                 
@@ -1532,7 +1543,7 @@ export class Game {
     }
 
     /**
-     * Edit repeat count with click cycling (Phase 4)
+    * Edit repeat count with click cycling
      * @param {RepeatBlock} repeatBlock - The repeat block to edit
      * @param {number} index - Index in queue
      */
@@ -1570,7 +1581,7 @@ export class Game {
             this.updateBallPosition();
         });
         
-        // Initialize audio on first interaction (Phase 7)
+        // Initialize audio on first interaction
         const initAudio = () => {
             this.sound.init();
             document.removeEventListener('click', initAudio);
@@ -1742,7 +1753,7 @@ export class Game {
         this.actionQueue.clear();
         this.resetBallPosition();
         this.grid.reset();
-        this.effects.clear(); // Clear effects (Phase 7)
+        this.effects.clear(); // Clear effects
         
         // Reset all targets to uncollected state
         this.targets.forEach(target => {
@@ -1794,7 +1805,7 @@ export class Game {
             }
         }
         
-        // Update ball and add trail (Phase 7)
+        // Update ball and add trail
         if (this.ball) {
             this.ball.update(deltaTime);
             
@@ -1804,7 +1815,7 @@ export class Game {
             }
         }
         
-        // Update effects (Phase 7)
+        // Update effects
         this.effects.update();
     }
 
@@ -1815,7 +1826,7 @@ export class Game {
         const ctx = this.renderer.getContext();
         const { width, height } = this.renderer.getDimensions();
         
-        // Apply screen shake (Phase 7)
+        // Apply screen shake
         const shake = this.effects.getShakeOffset();
         ctx.save();
         ctx.translate(shake.x, shake.y);
@@ -1827,7 +1838,7 @@ export class Game {
         // Render grid
         this.grid.render(ctx, true);
         
-        // Render targets (Phase 6)
+        // Render targets
         this.renderTargets(ctx);
         
         // Render trail (Phase 7 - behind ball)
@@ -1838,14 +1849,14 @@ export class Game {
             this.ball.render(ctx);
         }
         
-        // Render overlay effects (Phase 7)
+        // Render overlay effects
         this.effects.renderOverlay(ctx, width, height);
         
         ctx.restore();
     }
 
     /**
-     * Render level targets (Phase 6)
+     * Render level targets
      * @param {CanvasRenderingContext2D} ctx
      */
     renderTargets(ctx) {
@@ -1972,7 +1983,7 @@ export class Game {
     }
 
     /**
-     * Check if ball hit any targets (Phase 6)
+     * Check if ball hit any targets
      */
     checkTargetCollision() {
         this.targets.forEach(target => {
@@ -1987,10 +1998,9 @@ export class Game {
                     this.showMessage('💥 Hit obstacle!', 'error');
                     this.effects.spawnErrorEffect(x, y);
                     this.sound.playError();
-                    this.hitObstacleThisRun = true; // Track for achievements (Phase 8)
+                    this.hitObstacleThisRun = true; // Track for achievements
                 } else if (target.type === TargetType.COLLECT) {
                     console.log('Target collected!');
-                    this.showMessage('✨ +1', 'success');
                     this.effects.spawnCollectEffect(x, y);
                     this.sound.playCollect();
                 } else if (target.type === TargetType.FINISH) {
@@ -2010,13 +2020,13 @@ export class Game {
     }
 
     /**
-     * Check win condition at end of queue (Phase 6)
+     * Check win condition at end of queue
      */
     checkWinCondition() {
         const level = this.levelManager.getCurrentLevel();
         if (!level || this.levelComplete) return;
         
-        // Increment attempts (Phase 8)
+        // Increment attempts
         this.levelAttempts++;
         
         // Sync collected state with level targets
@@ -2032,12 +2042,12 @@ export class Game {
             this.levelComplete = true;
             const completion = this.levelManager.completeLevel(this.actionsUsed);
             
-            // Celebration effects (Phase 7)
+            // Celebration effects
             const { width, height } = this.renderer.getDimensions();
             this.effects.spawnConfetti(width, height);
             this.sound.playWin();
             
-            // Track achievements (Phase 8)
+            // Track achievements
             const newAchievements = this.achievements.recordLevelComplete(
                 level.id,
                 completion.stars,
@@ -2046,10 +2056,10 @@ export class Game {
                 this.levelAttempts
             );
             
-            // Track analytics (Phase 9)
+            // Track analytics
             this.analytics?.completeLevel(level.id, completion.stars, this.actionsUsed);
             
-            // Announce for accessibility (Phase 9)
+            // Announce for accessibility
             this.accessibility?.announce('Level complete!', true);
             newAchievements.forEach(a => {
                 this.accessibility?.announcer?.announceAchievement(a.name);
@@ -2059,7 +2069,7 @@ export class Game {
             this.showLevelComplete(completion, newAchievements);
             console.log(`Level complete! Stars: ${completion.stars}, Actions: ${this.actionsUsed}`);
         } else {
-            // Track failure (Phase 9)
+            // Track failure
             this.analytics?.failLevel(level.id, result.reason);
             this.accessibility?.announce(result.reason);
             
@@ -2078,6 +2088,14 @@ export class Game {
         // Remove existing modal
         const existing = document.querySelector('.level-complete-modal');
         if (existing) existing.remove();
+        
+        const currentLevelId = this.levelManager.getCurrentLevel()?.id || 0;
+        
+        // Special celebration for completing level 14 (final level)
+        if (currentLevelId === 14) {
+            this.showGameCompleteModal();
+            return;
+        }
         
         const stars = '⭐'.repeat(completion.stars) + '☆'.repeat(3 - completion.stars);
         const hasNext = this.levelManager.currentLevelIndex < this.levelManager.levels.length - 1;
@@ -2121,7 +2139,99 @@ export class Game {
     }
 
     /**
-     * Show temporary message (Phase 6)
+     * Show game complete modal with social sharing (final level 14)
+     */
+    showGameCompleteModal() {
+        const modal = document.createElement('div');
+        modal.className = 'level-complete-modal game-complete-modal';
+        
+        // Новый текст для шаринга и предпросмотра
+        const shareText = "Proud to share that I’ve completed all 14 levels of the StartSchool Logic Game 🧠✨ #startschoolriga #startschoolgame";
+        modal.innerHTML = `
+            <div class="modal-content game-complete-content">
+                <div class="confetti-bg"></div>
+                <h2 class="game-congrats-title">🏆 Congratulations!</h2>
+                <div class="share-section">
+                    <p class="share-title">Share your achievement:</p>
+                    <div class="share-example" style="margin: 10px 0; font-size: 1.05em; color: #333; background: #f8f8fa; border-radius: 8px; padding: 8px 12px;">
+                        <span>${shareText}</span>
+                    </div>
+                    <div class="social-buttons">
+                        <button class="social-btn facebook" onclick="game.shareToFacebook()" title="Share on Facebook">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            Facebook
+                        </button>
+                        <button class="social-btn linkedin" onclick="game.shareToLinkedIn()" title="Share on LinkedIn">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-1.14 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                            LinkedIn
+                        </button>
+                        <button class="social-btn twitter" onclick="game.shareToTwitter()" title="Share on X (Twitter)">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            X
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="btn-retry" onclick="game.closeGameCompleteModal()">🔄 Play Again</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Extra confetti celebration
+        const { width, height } = this.renderer.getDimensions();
+        for (let i = 0; i < 3; i++) {
+            setTimeout(() => this.effects.spawnConfetti(width, height), i * 500);
+        }
+        
+        // Animate in
+        requestAnimationFrame(() => modal.classList.add('show'));
+    }
+
+    /**
+     * Close game complete modal and restart
+     */
+    closeGameCompleteModal() {
+        const modal = document.querySelector('.game-complete-modal');
+        if (modal) modal.remove();
+        
+        // Go back to level 1
+        this.levelManager.goToLevel(0);
+        this.loadCurrentLevel();
+        this.actionQueue.clear();
+        this.updateQueueDisplay();
+    }
+
+    /**
+     * Share to Facebook
+     */
+    shareToFacebook() {
+        const shareText = "Proud to share that I’ve completed all 14 levels of the StartSchool Logic Game 🧠✨ #startschoolriga #startschoolgame";
+        const url = `https://www.facebook.com/sharer/sharer.php?quote=${encodeURIComponent(shareText)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+    }
+
+    /**
+     * Share to LinkedIn
+     */
+    shareToLinkedIn() {
+        const shareText = "Proud to share that I’ve completed all 14 levels of the StartSchool Logic Game 🧠✨ #startschoolriga #startschoolgame";
+        const url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(shareText)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+    }
+
+    /**
+     * Share to Twitter/X
+     */
+    shareToTwitter() {
+        const shareText = "Proud to share that I’ve completed all 14 levels of the StartSchool Logic Game 🧠✨ #startschoolriga #startschoolgame";
+        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+        window.open(url, '_blank', 'width=600,height=400');
+    }
+
+    /**
+     * Show temporary message
      * @param {string} text - Message text
      * @param {string} type - 'success', 'error', 'info'
      */
@@ -2144,7 +2254,7 @@ export class Game {
     }
 
     /**
-     * Retry current level (Phase 6)
+     * Retry current level
      */
     retryLevel() {
         // Remove modal
@@ -2159,7 +2269,7 @@ export class Game {
     }
 
     /**
-     * Go to next level (Phase 6)
+     * Go to next level
      */
     goToNextLevel() {
         // Remove modal
@@ -2178,7 +2288,7 @@ export class Game {
     }
 
     /**
-     * Create level navigation UI (Phase 6)
+     * Create level navigation UI
      */
     createLevelUI() {
         const header = document.querySelector('.game-header');
@@ -2207,7 +2317,7 @@ export class Game {
     }
 
     /**
-     * Update level display (Phase 6)
+     * Update level display
      */
     updateLevelDisplay() {
         const level = this.levelManager.getCurrentLevel();
@@ -2235,7 +2345,7 @@ export class Game {
     }
 
     /**
-     * Go to previous level (Phase 6)
+     * Go to previous level
      */
     goToPrevLevel() {
         if (this.levelManager.previousLevel()) {
@@ -2246,7 +2356,7 @@ export class Game {
     }
 
     /**
-     * Skip to next level if unlocked (Phase 6)
+     * Skip to next level if unlocked
      */
     skipToNextLevel() {
         const nextId = this.levelManager.currentLevel.id + 1;
@@ -2298,12 +2408,8 @@ export class Game {
         }
     }
 
-    // ============================================
-    // Phase 8: Engagement UI
-    // ============================================
-
     /**
-     * Create engagement UI elements (Phase 8)
+     * Create engagement UI elements 
      */
     createEngagementUI() {
         // Add achievements button to header
@@ -2319,9 +2425,8 @@ export class Game {
                 <button class="engagement-btn" id="btn-stats" title="Stats (I)" aria-label="View statistics">
                     📊
                 </button>
-                <button class="help-btn" id="btn-help" title="Help (H)" aria-label="Keyboard shortcuts">
-                    ?
-                </button>
+                <!-- Help button removed: no keyboard shortcuts -->
+                <!-- '?' removed as requested -->
             `;
             header.appendChild(engagementBtns);
 
@@ -2333,6 +2438,138 @@ export class Game {
 
         // Update achievements count
         this.updateAchievementsCount();
+    }
+
+    /**
+     * Create timer UI
+     */
+    createTimerUI() {
+        const header = document.querySelector('.game-header');
+        if (!header) return;
+        
+        const timerContainer = document.createElement('div');
+        timerContainer.className = 'timer-container';
+        timerContainer.innerHTML = `
+            <div class="timer-display" id="session-timer">
+                <span class="timer-icon">⏱️</span>
+                <span class="timer-value" id="timer-value">00:00</span>
+            </div>
+            <button class="timer-toggle-btn" id="btn-timer-toggle" title="Show/Hide Timer">
+                Hide
+            </button>
+        `;
+        
+        // Insert before engagement buttons
+        const engagementBtns = header.querySelector('.engagement-buttons');
+        if (engagementBtns) {
+            header.insertBefore(timerContainer, engagementBtns);
+        } else {
+            header.appendChild(timerContainer);
+        }
+        
+        // Bind toggle button
+        document.getElementById('btn-timer-toggle')?.addEventListener('click', () => this.toggleTimer());
+        
+        // Load timer visibility preference
+        const savedPref = localStorage.getItem('startschool_timer_visible');
+        if (savedPref !== null) {
+            this.timerVisible = savedPref === 'true';
+            this.updateTimerVisibility();
+        }
+        
+        // Start timer interval
+        this.timerInterval = setInterval(() => this.updateTimer(), 1000);
+        this.updateTimer();
+    }
+
+    /**
+     * Update timer display
+     */
+    updateTimer() {
+        if (!this.timerVisible) return;
+        
+        const elapsed = Date.now() - this.sessionStartTime;
+        const seconds = Math.floor(elapsed / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        
+        const timerValue = document.getElementById('timer-value');
+        if (timerValue) {
+            if (hours > 0) {
+                timerValue.textContent = `${hours}:${String(minutes % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+            } else {
+                timerValue.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+            }
+        }
+    }
+
+    /**
+     * Toggle timer visibility
+     */
+    toggleTimer() {
+        this.timerVisible = !this.timerVisible;
+        localStorage.setItem('startschool_timer_visible', this.timerVisible.toString());
+        this.updateTimerVisibility();
+    }
+
+    /**
+     * Update timer visibility in UI
+     */
+    updateTimerVisibility() {
+        const timerDisplay = document.getElementById('session-timer');
+        const toggleBtn = document.getElementById('btn-timer-toggle');
+        
+        if (timerDisplay) {
+            timerDisplay.style.display = this.timerVisible ? 'flex' : 'none';
+        }
+        if (toggleBtn) {
+            toggleBtn.textContent = this.timerVisible ? 'Hide' : 'Show';
+        }
+    }
+
+    /**
+     * Create sound controls UI (positioned on right side)
+     */
+    createSoundControlsUI() {
+        const soundControls = document.createElement('div');
+        soundControls.className = 'sound-controls';
+        soundControls.innerHTML = `
+            <button class="sound-btn ${this.sound.musicEnabled ? 'active' : ''}" id="btn-music" title="Toggle Music">
+                <span class="sound-icon">🎵</span>
+            </button>
+            <button class="sound-btn ${this.sound.sfxEnabled ? 'active' : ''}" id="btn-sfx" title="Toggle Sound Effects">
+                <span class="sound-icon">🔊</span>
+            </button>
+        `;
+        
+        // Append to body for fixed positioning
+        document.body.appendChild(soundControls);
+        
+        // Bind events
+        document.getElementById('btn-music')?.addEventListener('click', () => this.toggleMusic());
+        document.getElementById('btn-sfx')?.addEventListener('click', () => this.toggleSFX());
+    }
+
+    /**
+     * Toggle music
+     */
+    toggleMusic() {
+        const enabled = this.sound.toggleMusic();
+        const btn = document.getElementById('btn-music');
+        if (btn) {
+            btn.classList.toggle('active', enabled);
+        }
+    }
+
+    /**
+     * Toggle sound effects
+     */
+    toggleSFX() {
+        const enabled = this.sound.toggleSFX();
+        const btn = document.getElementById('btn-sfx');
+        if (btn) {
+            btn.classList.toggle('active', enabled);
+        }
     }
 
     /**
@@ -2348,7 +2585,7 @@ export class Game {
     }
 
     /**
-     * Show achievements modal (Phase 8)
+     * Show achievements modal
      */
     showAchievementsModal() {
         const existing = document.querySelector('.achievements-modal');
@@ -2386,7 +2623,7 @@ export class Game {
     }
 
     /**
-     * Show stats modal (Phase 8)
+     * Show stats modal 
      */
     showStatsModal() {
         const existing = document.querySelector('.stats-modal');
@@ -2439,7 +2676,7 @@ export class Game {
                     </div>
                     <div class="stat-item">
                         <span class="stat-value">${stats.recursionUsed}</span>
-                        <span class="stat-label">Recursions Used</span>
+                        <span class="stat-label">Nests Used</span>
                     </div>
                 </div>
 

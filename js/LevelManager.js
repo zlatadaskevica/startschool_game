@@ -1,7 +1,3 @@
-/**
- * LevelManager Class - Phase 6
- * Manages level progression, unlocks, and persistence
- */
 
 import { Level, LEVELS, Difficulty, UnlockedFeatures, TargetType } from './Level.js';
 

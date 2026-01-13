@@ -1,7 +1,3 @@
-/**
- * Effects System - Phase 7: UX Polish
- * Particle effects, animations, and visual feedback
- */
 
 /**
  * Particle - Single animated particle
@@ -325,13 +321,40 @@ export class EffectsManager {
 }
 
 /**
- * Sound Manager - Simple Web Audio sounds
+ * Sound Manager - Simple Web Audio sounds with background music
  */
 export class SoundManager {
     constructor() {
-        this.enabled = true;
+        this.sfxEnabled = true;
+        this.musicEnabled = true;
         this.audioContext = null;
         this.initialized = false;
+        this.musicGain = null;
+        this.musicOscillators = [];
+        this.musicPlaying = false;
+        this.musicInterval = null;
+        
+        // Load preferences from localStorage
+        this.loadPreferences();
+    }
+
+    /**
+     * Load sound preferences from localStorage
+     */
+    loadPreferences() {
+        const sfxPref = localStorage.getItem('startschool_sfx_enabled');
+        const musicPref = localStorage.getItem('startschool_music_enabled');
+        
+        if (sfxPref !== null) this.sfxEnabled = sfxPref === 'true';
+        if (musicPref !== null) this.musicEnabled = musicPref === 'true';
+    }
+
+    /**
+     * Save sound preferences to localStorage
+     */
+    savePreferences() {
+        localStorage.setItem('startschool_sfx_enabled', this.sfxEnabled.toString());
+        localStorage.setItem('startschool_music_enabled', this.musicEnabled.toString());
     }
 
     /**
@@ -342,22 +365,31 @@ export class SoundManager {
         
         try {
             this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            this.musicGain = this.audioContext.createGain();
+            this.musicGain.connect(this.audioContext.destination);
+            this.musicGain.gain.value = 0.08; // Low volume for background music
             this.initialized = true;
+            
+            // Start music if enabled
+            if (this.musicEnabled) {
+                this.startBackgroundMusic();
+            }
         } catch (e) {
             console.log('Web Audio not supported');
-            this.enabled = false;
+            this.sfxEnabled = false;
+            this.musicEnabled = false;
         }
     }
 
     /**
-     * Play a simple tone
+     * Play a simple tone (SFX)
      * @param {number} frequency 
      * @param {number} duration 
      * @param {string} type 
      * @param {number} volume 
      */
     playTone(frequency, duration = 0.1, type = 'sine', volume = 0.3) {
-        if (!this.enabled || !this.audioContext) return;
+        if (!this.sfxEnabled || !this.audioContext) return;
 
         const oscillator = this.audioContext.createOscillator();
         const gainNode = this.audioContext.createGain();
@@ -373,6 +405,97 @@ export class SoundManager {
 
         oscillator.start();
         oscillator.stop(this.audioContext.currentTime + duration);
+    }
+
+    /**
+     * Start ambient background music (gentle melody)
+     */
+    startBackgroundMusic() {
+        if (!this.audioContext || this.musicPlaying) return;
+        
+        this.musicPlaying = true;
+        
+        // Pentatonic scale notes - always sounds pleasant
+        const notes = [
+            261.63, // C4
+            293.66, // D4
+            329.63, // E4
+            392.00, // G4
+            440.00, // A4
+            523.25, // C5
+            587.33, // D5
+            659.25  // E5
+        ];
+        
+        // Play a gentle bell-like tone
+        const playNote = (freq, delay = 0) => {
+            if (!this.musicEnabled || !this.musicPlaying) return;
+            
+            setTimeout(() => {
+                if (!this.musicEnabled || !this.musicPlaying) return;
+                
+                const osc = this.audioContext.createOscillator();
+                const gain = this.audioContext.createGain();
+                
+                osc.connect(gain);
+                gain.connect(this.musicGain);
+                
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                
+                const time = this.audioContext.currentTime;
+                // Soft piano-like envelope
+                gain.gain.setValueAtTime(0, time);
+                gain.gain.linearRampToValueAtTime(0.3, time + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.1, time + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.01, time + 2);
+                
+                osc.start(time);
+                osc.stop(time + 2.1);
+            }, delay);
+        };
+        
+        // Play random gentle melody patterns
+        const playMelody = () => {
+            if (!this.musicEnabled || !this.musicPlaying) return;
+            
+            // Pick 2-3 random notes from pentatonic scale
+            const noteCount = 2 + Math.floor(Math.random() * 2);
+            
+            for (let i = 0; i < noteCount; i++) {
+                const note = notes[Math.floor(Math.random() * notes.length)];
+                playNote(note, i * 400 + Math.random() * 200);
+            }
+        };
+        
+        // Play first melody
+        playMelody();
+        
+        // Continue с ещё более быстрым темпом (0.7–1.2 сек)
+        const scheduleNext = () => {
+            if (!this.musicEnabled || !this.musicPlaying) return;
+            const interval = 700 + Math.random() * 500;
+            this.musicTimeout = setTimeout(() => {
+                playMelody();
+                scheduleNext();
+            }, interval);
+        };
+        scheduleNext();
+    }
+
+    /**
+     * Stop background music
+     */
+    stopBackgroundMusic() {
+        this.musicPlaying = false;
+        if (this.musicInterval) {
+            clearInterval(this.musicInterval);
+            this.musicInterval = null;
+        }
+        if (this.musicTimeout) {
+            clearTimeout(this.musicTimeout);
+            this.musicTimeout = null;
+        }
     }
 
     /**
@@ -416,11 +539,46 @@ export class SoundManager {
     }
 
     /**
-     * Toggle sound on/off
+     * Toggle sound effects on/off
+     */
+    toggleSFX() {
+        this.sfxEnabled = !this.sfxEnabled;
+        this.savePreferences();
+        return this.sfxEnabled;
+    }
+
+    /**
+     * Toggle music on/off
+     */
+    toggleMusic() {
+        this.musicEnabled = !this.musicEnabled;
+        this.savePreferences();
+        
+        if (this.musicEnabled) {
+            this.startBackgroundMusic();
+        } else {
+            this.stopBackgroundMusic();
+        }
+        
+        return this.musicEnabled;
+    }
+
+    /**
+     * Toggle all sound on/off (legacy support)
      */
     toggle() {
-        this.enabled = !this.enabled;
-        return this.enabled;
+        const newState = !this.sfxEnabled;
+        this.sfxEnabled = newState;
+        this.musicEnabled = newState;
+        this.savePreferences();
+        
+        if (this.musicEnabled) {
+            this.startBackgroundMusic();
+        } else {
+            this.stopBackgroundMusic();
+        }
+        
+        return newState;
     }
 }
 

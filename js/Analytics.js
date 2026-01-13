@@ -1,7 +1,3 @@
-/**
- * Analytics System - Phase 9
- * Tracks player behavior and game metrics (local only, no backend)
- */
 
 /**
  * Event types for analytics

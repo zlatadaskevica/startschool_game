@@ -1,6 +1,7 @@
 /* ============================================
    StartSchool Logic Game - Styles
    Phase 3: Reusable Action Groups
+   Cross-browser compatible (Chrome, Firefox, Safari, Edge)
    ============================================ */
 
 /* CSS Custom Properties - Brand Colors */
@@ -47,6 +48,7 @@
 html {
     font-size: 16px;
     -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
 }
 
 body {
@@ -57,11 +59,18 @@ body {
     min-height: 100vh;
     overflow: hidden;
     touch-action: manipulation;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Game Container */
 #game-container {
+    display: -webkit-box;
+    display: -ms-flexbox;
     display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
     flex-direction: column;
     height: 100vh;
     height: 100dvh; /* Dynamic viewport height for mobile */
@@ -79,6 +88,7 @@ body {
     background-color: var(--color-surface);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
+    transition: background 0.3s, color 0.3s;
 }
 
 .game-title {
@@ -86,6 +96,11 @@ body {
     font-weight: 700;
     color: var(--color-primary);
     letter-spacing: -0.02em;
+}
+
+.game-logo {
+    height: 32px;
+    width: auto;
 }
 
 .level-info {
@@ -132,6 +147,7 @@ body {
     background-color: var(--color-surface);
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
+    transition: background 0.3s, color 0.3s;
 }
 
 /* ============================================
@@ -571,7 +587,7 @@ body {
     color: white !important;
 }
 
-/* Recursion button styling */
+/* Nest button styling */
 .recursion-btn {
     background-color: #F3E5F5 !important;
     border-color: #9C27B0 !important;
@@ -878,7 +894,7 @@ body {
 }
 
 /* ============================================
-   Recursion Builder UI
+   Nest Builder UI
    ============================================ */
 
 .queue-item-recursion-builder {
@@ -951,7 +967,7 @@ body {
     border-radius: var(--radius-sm);
 }
 
-/* Recursion depth control (like repeat count) */
+/* Nest depth control (like repeat count) */
 .recursion-depth-control {
     display: flex;
     align-items: center;
@@ -984,7 +1000,7 @@ body {
     transform: scale(0.95);
 }
 
-/* Recursion button building state */
+/* Nest button building state */
 .recursion-btn.building-recursion {
     background: linear-gradient(135deg, #9C27B0 0%, #BA68C8 100%) !important;
     animation: building-pulse 1s ease-in-out infinite;
@@ -1193,7 +1209,7 @@ body {
     border-color: #555;
 }
 
-/* Recursion button styling */
+/* Nest button styling */
 .recursion-btn {
     background: linear-gradient(135deg, #1a1a2e 0%, #2a2a4e 100%) !important;
     border: 2px solid #6666cc !important;
@@ -2101,32 +2117,7 @@ body {
     overflow-y: auto;
 }
 
-.shortcuts-grid {
-    display: grid;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
-}
-
-.shortcut-group h3 {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    margin-bottom: var(--spacing-xs);
-    padding-bottom: var(--spacing-xs);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
-}
-
-.shortcut-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-xs) 0;
-    font-size: 0.9rem;
-}
-
-.shortcut-item span {
-    color: var(--color-text-muted);
-}
+/* Shortcut-related styles removed as requested. */
 
 kbd {
     display: inline-block;
@@ -2233,4 +2224,441 @@ kbd {
         font-size: 0.75rem;
         padding: 1px 4px;
     }
+}
+
+/* ============================================
+   Game Complete Modal with Social Sharing
+   ============================================ */
+
+.game-complete-modal .modal-content {
+    max-width: 400px;
+}
+
+.game-complete-content {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.game-complete-content h2 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: trophy-glow 2s ease-in-out infinite;
+}
+
+@keyframes trophy-glow {
+    0%, 100% { filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.5)); }
+    50% { filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8)); }
+}
+
+.game-complete-text {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: var(--spacing-xs);
+}
+
+.game-complete-subtext {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-lg);
+}
+
+.share-section {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.share-title {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-sm);
+}
+
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+}
+
+.social-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    color: white;
+}
+
+.social-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.social-btn.facebook {
+    background: #1877F2;
+}
+
+.social-btn.facebook:hover {
+    background: #0d65d9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(24, 119, 242, 0.4);
+}
+
+.social-btn.linkedin {
+    background: #0A66C2;
+}
+
+.social-btn.linkedin:hover {
+    background: #084d94;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(10, 102, 194, 0.4);
+}
+
+.social-btn.twitter {
+    background: #000000;
+}
+
+.social-btn.twitter:hover {
+    background: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.social-btn.instagram {
+    background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-btn.instagram:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(225, 48, 108, 0.4);
+}
+
+/* Responsive social buttons */
+@media (max-width: 400px) {
+    .social-btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+    }
+    
+    .social-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .game-complete-content h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Follow Us Section in Modal */
+.follow-section {
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.follow-title {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    margin-bottom: var(--spacing-sm);
+}
+
+.follow-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-sm);
+}
+
+.follow-link {
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+}
+
+.follow-link.website {
+    color: #FF69B4;
+}
+.follow-link.website:hover {
+    background: rgba(255, 105, 180, 0.15);
+}
+
+.follow-link.instagram {
+    color: #E1306C;
+}
+.follow-link.instagram:hover {
+    background: rgba(225, 48, 108, 0.15);
+}
+
+.follow-link.linkedin {
+    color: #0A66C2;
+}
+.follow-link.linkedin:hover {
+    background: rgba(10, 102, 194, 0.15);
+}
+
+.follow-link.facebook {
+    color: #1877F2;
+}
+.follow-link.facebook:hover {
+    background: rgba(24, 119, 242, 0.15);
+}
+
+.follow-link.tiktok {
+    color: #000000;
+}
+.follow-link.tiktok:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 400px) {
+    .follow-link {
+        font-size: 0.75rem;
+        padding: 3px 6px;
+    }
+}
+
+/* ============================================
+   Follow Us Bar - Fixed Bottom
+   ============================================ */
+
+.follow-us-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--color-surface);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.follow-us-label {
+    font-size: 0.85rem;
+    color: #000000;
+    font-weight: 600;
+}
+
+.follow-link-bar {
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    color: #FF77C9;
+}
+
+.follow-link-bar:hover {
+    background: rgba(255, 119, 201, 0.15);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .follow-us-bar {
+        gap: var(--spacing-sm);
+        padding: var(--spacing-xs) var(--spacing-sm);
+    }
+    
+    .follow-us-label {
+        font-size: 0.8rem;
+    }
+    
+    .follow-link-bar {
+        font-size: 0.8rem;
+        padding: 2px 6px;
+    }
+}
+
+/* ============================================
+   Session Timer
+   ============================================ */
+
+.timer-container {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.timer-display {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+}
+
+.timer-icon {
+    font-size: 0.9rem;
+}
+
+.timer-value {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--color-text);
+    min-width: 45px;
+}
+
+.timer-toggle-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.timer-toggle-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 480px) {
+    .timer-container {
+        gap: 2px;
+    }
+    
+    .timer-display {
+        padding: 3px 6px;
+        font-size: 0.75rem;
+    }
+    
+    .timer-value {
+        min-width: 38px;
+    }
+    
+    .timer-toggle-btn {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+    }
+}
+
+/* ============================================
+   Sound Controls (Side positioned)
+   ============================================ */
+
+.sound-controls {
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 100;
+}
+
+.sound-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sound-btn:hover {
+    background: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sound-btn.active {
+    background: rgba(255, 119, 201, 0.15);
+    border-color: var(--color-target);
+}
+
+.sound-btn:not(.active) {
+    opacity: 0.6;
+}
+
+.sound-icon {
+    position: relative;
+    font-size: 1.1rem;
+}
+
+.sound-label {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .sound-controls {
+        right: 5px;
+        gap: 6px;
+    }
+    
+    .sound-btn {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .sound-icon {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .sound-controls {
+        right: 3px;
+    }
+    
+    .sound-btn {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .sound-icon {
+        font-size: 0.9rem;
+    }
+}
+
+/* Theme modifiers for header/footer */
+.game-header.theme-dark,
+.game-footer.theme-dark {
+    background: var(--color-dark-bg) !important;
+    color: var(--color-dark-text) !important;
+}
+.game-header.theme-accent,
+.game-footer.theme-accent {
+    background: var(--color-accent) !important;
+    color: #fff !important;
+}
+
+.sound-btn#btn-theme {
+    background: rgba(0,0,0,0.07);
+    border: 1px solid rgba(0,0,0,0.12);
+    color: #333;
+}
+.sound-btn#btn-theme:hover {
+    background: var(--color-accent);
+    color: #fff;
 }

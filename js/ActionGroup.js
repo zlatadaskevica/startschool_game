@@ -28,7 +28,7 @@ export class ActionGroup {
      */
     constructor(name = '', color = null) {
         this.id = ActionGroup.generateId();
-        this.name = name || `Block ${ActionGroup.groupCount}`;
+        this.name = name || 'Block';
         this.color = color || GroupColors[ActionGroup.groupCount % GroupColors.length];
         this.actions = [];
         this.icon = '▣';

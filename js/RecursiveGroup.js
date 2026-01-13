@@ -1,8 +1,3 @@
-/**
- * RecursiveGroup Class - Phase 5
- * Action group that can call itself (recursion concept)
- * Teaches: base case, recursive call, stack depth
- */
 
 import { Action, ActionType } from './Action.js';
 import { GroupColors } from './ActionGroup.js';

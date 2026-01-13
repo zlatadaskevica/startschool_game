@@ -1,7 +1,3 @@
-/**
- * Achievements System - Phase 8: Engagement
- * One-time achievements for MVP (no backend, no streaks)
- */
 
 /**
  * Achievement definitions - One-time accomplishments

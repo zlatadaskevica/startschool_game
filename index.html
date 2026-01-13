@@ -5,13 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="StartSchool Logic Game - Learn programming concepts through gameplay">
     <meta name="theme-color" content="#000FEE">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>StartSchool Logic Game</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="preload" href="js/main.js" as="script" crossorigin>
+    <link rel="preload" href="assets/logo.png" as="image">
+    
+    <!-- DNS prefetch for social links -->
+    <link rel="dns-prefetch" href="https://www.startschool.org">
+    <link rel="dns-prefetch" href="https://www.instagram.com">
+    <link rel="dns-prefetch" href="https://www.linkedin.com">
+    <link rel="dns-prefetch" href="https://www.facebook.com">
+    
     <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Inline critical CSS for instant first paint -->
+    <style>
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f0f0f0;
+            border-top-color: #FF77C9;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            margin-top: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
+    <!-- Loading screen for fast perceived performance -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading...</div>
+    </div>
+    
     <div id="game-container" role="main" aria-label="Game area">
         <header class="game-header">
-            <h1 class="game-title">StartSchool</h1>
+            <img src="assets/logo.png" alt="StartSchool" class="game-logo">
             <div class="level-info" aria-live="polite">
             </div>
         </header>
@@ -34,6 +94,15 @@
                 </button>
             </div>
         </footer>
+        
+        <div class="follow-us-bar">
+            <span class="follow-us-label">Follow us:</span>
+            <a href="https://www.startschool.org/" target="_blank" class="follow-link-bar website">Website</a>
+            <a href="https://www.instagram.com/startschoolriga/" target="_blank" class="follow-link-bar instagram">Instagram</a>
+            <a href="https://www.linkedin.com/school/start-school-riga/posts/?feedView=all" target="_blank" class="follow-link-bar linkedin">LinkedIn</a>
+            <a href="https://www.facebook.com/StartSchoolRiga/" target="_blank" class="follow-link-bar facebook">Facebook</a>
+            <a href="https://www.tiktok.com/@startschoolriga" target="_blank" class="follow-link-bar tiktok">TikTok</a>
+        </div>
     </div>
 
     <script type="module" src="js/main.js"></script>

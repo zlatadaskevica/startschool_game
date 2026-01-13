@@ -1,7 +1,3 @@
-/**
- * Level Class - Phase 6
- * Defines level structure with targets, start position, and win conditions
- */
 
 import { CONFIG } from './config.js';
 
@@ -449,7 +445,7 @@ export const LEVELS = [
             { x: 5, y: 4, type: TargetType.COLLECT },
             { x: 5, y: 5, type: TargetType.FINISH }
         ],
-        hint: '🌀 Recursion: IN=[→] OUT=[↓] ×3 gives →→→↓↓↓!',
+        hint: '🌀 Nest: IN=[→] OUT=[↓] ×3 gives →→→↓↓↓!',
         tutorial: 'recursion',
         maxQueueSize: 1,
         requiredFeatures: ['BLOCKS', 'RECURSION']
