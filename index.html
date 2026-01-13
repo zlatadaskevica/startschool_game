@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="StartSchool Logic Game - Learn programming concepts through gameplay">
+    <meta name="theme-color" content="#000FEE">
+    <title>StartSchool Logic Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="game-container" role="main" aria-label="Game area">
+        <header class="game-header">
+            <h1 class="game-title">StartSchool</h1>
+            <div class="level-info" aria-live="polite">
+            </div>
+        </header>
+        
+        <div class="canvas-wrapper">
+            <canvas id="game-canvas" aria-label="Game board"></canvas>
+        </div>
+        
+        <footer class="game-footer">
+            <div class="controls" role="toolbar" aria-label="Game controls">
+                <button id="btn-play" class="control-btn" aria-label="Play">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </button>
+                <button id="btn-reset" class="control-btn" aria-label="Reset">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                    </svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
