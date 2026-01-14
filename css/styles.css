@@ -1,9 +1,3 @@
-/* ============================================
-   StartSchool Logic Game - Styles
-   Phase 3: Reusable Action Groups
-   Cross-browser compatible (Chrome, Firefox, Safari, Edge)
-   ============================================ */
-
 /* CSS Custom Properties - Brand Colors */
 :root {
     --color-primary: #000FEE;
@@ -57,7 +51,7 @@ body {
     color: var(--color-text);
     line-height: 1.5;
     min-height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */
     touch-action: manipulation;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -65,23 +59,20 @@ body {
 
 /* Game Container */
 #game-container {
-    display: -webkit-box;
-    display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
     flex-direction: column;
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for mobile */
-    max-width: 100%;
+    min-height: 100vh;
+    width: 100%;
+    max-width: 100vw;
     margin: 0 auto;
     background-color: var(--color-surface);
+    box-sizing: border-box;
 }
 
 /* Header */
 .game-header {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     padding: var(--spacing-md) var(--spacing-lg);
@@ -89,6 +80,8 @@ body {
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
     transition: background 0.3s, color 0.3s;
+    overflow-x: auto;
+    row-gap: var(--spacing-xs);
 }
 
 .game-title {
@@ -128,7 +121,8 @@ body {
     justify-content: center;
     align-items: center;
     padding: var(--spacing-md);
-    overflow: hidden;
+    overflow: visible;
+    min-height: 220px;
 }
 
 #game-canvas {
@@ -136,8 +130,12 @@ body {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     touch-action: none;
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    max-height: 70vw;
+    min-height: 220px;
 }
 
 /* Footer */
@@ -148,6 +146,8 @@ body {
     border-top: 1px solid rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
     transition: background 0.3s, color 0.3s;
+    position: relative;
+    z-index: 2;
 }
 
 /* ============================================
@@ -355,6 +355,8 @@ body {
 @media (min-width: 768px) {
     #game-container {
         max-width: 600px;
+        min-height: 80vh;
+        height: auto;
     }
     
     .game-header {
@@ -382,15 +384,14 @@ body {
         max-width: 800px;
         margin-top: var(--spacing-xl);
         margin-bottom: var(--spacing-xl);
-        height: calc(100vh - var(--spacing-xl) * 2);
+        min-height: 70vh;
+        height: auto;
         border-radius: var(--radius-lg);
         box-shadow: var(--shadow-lg);
     }
 }
 
-/* ============================================
-   Groups Panel - Phase 3
-   ============================================ */
+
 
 .groups-panel {
     margin-bottom: var(--spacing-md);
@@ -687,9 +688,7 @@ body {
     }
 }
 
-/* ============================================
-   Repeat Blocks - Phase 4
-   ============================================ */
+
 
 .queue-item-repeat {
     background: linear-gradient(135deg, var(--color-primary) 0%, #4466FF 100%);
@@ -1006,9 +1005,6 @@ body {
     animation: building-pulse 1s ease-in-out infinite;
 }
 
-/* ============================================
-   Recursive Groups - Phase 5
-   ============================================ */
 
 .recursive-panel {
     margin-bottom: var(--spacing-sm);
@@ -1256,9 +1252,7 @@ body {
     }
 }
 
-/* ============================================
-   Level System - Phase 6
-   ============================================ */
+
 
 /* Level navigation */
 .level-info {
@@ -1788,9 +1782,6 @@ body {
     }
 }
 
-/* ============================================
-   Phase 8: Engagement Features
-   ============================================ */
 
 /* Engagement Buttons */
 .engagement-buttons {
@@ -2695,5 +2686,28 @@ kbd {
     .game-footer, .follow-us-bar, .groups-panel, .action-container, .blocks-section, .nest-section {
         overflow-y: auto;
         max-height: calc(60vh - 60px);
+    }
+    #game-canvas {
+        max-width: 700px;
+        min-height: 400px;
+        aspect-ratio: 1 / 1;
+    }
+    .game-header {
+        flex-wrap: wrap;
+        align-items: stretch;
+        padding: var(--spacing-sm) var(--spacing-xs);
+        overflow-x: auto;
+    }
+    .canvas-wrapper {
+        padding: var(--spacing-xs);
+        min-height: 160px;
+    }
+    .game-footer {
+        padding: var(--spacing-xs) var(--spacing-xs);
+    }
+    #game-canvas {
+        max-width: 98vw;
+        min-height: 160px;
+        aspect-ratio: 1 / 1;
     }
 }
