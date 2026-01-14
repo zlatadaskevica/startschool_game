@@ -1,4 +1,3 @@
-
 /**
  * ARIA live region announcer
  */
